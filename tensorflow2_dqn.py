@@ -31,24 +31,15 @@ class DQN(keras.Model):
         self.dense1 = keras.layers.Dense(units=512, activation='relu')
         self.dense2 = keras.layers.Dense(units=n_actions)
 
-        #make prepareations in order to move operatiions to proper device. for local runtime
 
     def call(self, state):
 
-        #print('input shape: ',state.shape)
-        #exit()
         conv1 = self.conv1(state)
-        #print('Conv1 output shape:', conv1.shape)
         conv2 = self.conv2(conv1)
-        #print('Conv2 output shape:', conv2.shape)
         conv3 = self.conv3(conv2)
-        #print('Conv3 output shape:',conv3.shape)
         flat = self.flat(conv3)
-        #print('flat : ', flat.shape)
         dense1 = self.dense1(flat)
-        #print('dense1 shape: ', dense1.shape)
         actions = self.dense2(dense1)
-        #print('actions: ', actions.shape)
         return actions
 
     def save_checkpoint(self):
@@ -95,21 +86,13 @@ class DQNAgent(object):
         
     def choose_action(self, observation):
         if tf.random.uniform([1]) > self.epsilon:
-          #take tensor and move to device
-          #increase rank
+
           actions = self.q_eval.call(tf.expand_dims(observation, axis=0))
-          #print('model output = ', actions)
           
           action = tf.argmax(actions, axis=1)
-          #print('model action type:',type(action))
-          #print(action)
 
         else:
           action = np.random.choice(self.action_space)
-          #print('random action type: ', type(action))
-          #print(action)
-          #the enviroment wants an integer as input for an action
-
         return action
 
     def store_transition(self, state, action, reward, state_, done):
@@ -148,14 +131,17 @@ class DQNAgent(object):
 
             q_pred = tf.gather_nd(self.q_eval.call(states), list(zip(indices, actions)))
             q_next = tf.math.reduce_max(self.q_next.call(states_), axis=1)
-        #is the code below even doing anything? yes it is we just cant see it 
-        # need to fix this part
-        #q_next[dones] = 0.0
+
+            q_next_np = np.array(q_next)
+            q_next_np[np.array(dones,dtype=np.bool)] = 0
+            q_next = tf.convert_to_tensor(q_next_np, dtype=tf.int32)
+
             q_target = rewards + self.gamma * q_next
             loss = keras.losses.MSE(q_target, q_pred)
         gradient = tape.gradient(loss, self.q_eval.trainable_variables)
         optimizer.apply_gradients(zip(gradient, self.q_eval.trainable_variables))
         self.decrement_epsilon()
+        self.learn_step_counter += 1
 
 
 def main(num_games= 10,load_checkpoint=False, env_name='PongNoFrameskip-v4'):

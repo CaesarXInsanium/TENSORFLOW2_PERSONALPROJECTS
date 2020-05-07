@@ -9,7 +9,7 @@ from utils import plot_learning_curve, make_env
 #tensorflow2 really is easy to code in. this code was developed using google colab
 #requires a GPU as of tensorflow version 2.0.1 i think
 
-class DQN(keras.Model):
+class DDQN(keras.Model):
     def __init__(self,lr,n_actions,name,input_dims,chkpt_dir):
         super(DQN, self).__init__()
         self.checkpoint_dir = chkpt_dir
@@ -53,7 +53,7 @@ class DQN(keras.Model):
       self.load_weights(self.checkpoint_file)
 
 
-class DQNAgent(object):
+class DDQNAgent(object):
     def __init__(self, gamma, epsilon, lr, n_actions, input_dims,
                  mem_size, batch_size, eps_min=0.01, eps_dec=5e-7,
                  replace=1000, algo=None, env_name=None, chkpt_dir='tmp/dqn'):
@@ -74,12 +74,12 @@ class DQNAgent(object):
 
         self.memory = ReplayBuffer(mem_size, input_dims, n_actions)
 
-        self.q_eval = DQN(self.lr, self.n_actions,
+        self.q_eval = DDQN(self.lr, self.n_actions,
                                     input_dims=self.input_dims,
                                     name=self.env_name+'_'+self.algo+'_q_eval',
                                     chkpt_dir=self.chkpt_dir)
 
-        self.q_next = DQN(self.lr, self.n_actions,
+        self.q_next = DDQN(self.lr, self.n_actions,
                                     input_dims=self.input_dims,
                                     name=self.env_name+'_'+self.algo+'_q_next',
                                     chkpt_dir=self.chkpt_dir)
@@ -154,9 +154,9 @@ def main(num_games= 10,load_checkpoint=False, env_name='PongNoFrameskip-v4'):
     env  = make_env(env_name)
     best_score = -np.inf
 
-    agent = DQNAgent(gamma=0.99, epsilon=1.0,lr=0.0001,input_dims=(env.observation_space.shape),
+    agent = DDQNAgent(gamma=0.99, epsilon=1.0,lr=0.0001,input_dims=(env.observation_space.shape),
                      n_actions=env.action_space.n, mem_size=20000, eps_min=0.1, batch_size=32,replace=1000,
-                     eps_dec=1e-5, chkpt_dir='models/',algo='DQNAgent', env_name=env_name)
+                     eps_dec=1e-5, chkpt_dir='models/',algo='DDQNAgent', env_name=env_name)
     if load_checkpoint:
           agent.load_models()
     fname = agent.algo + '_' + agent.env_name + '_lr' + str(agent.lr) +'_' \
