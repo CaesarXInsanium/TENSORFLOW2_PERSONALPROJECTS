@@ -16,6 +16,7 @@ class DQN(keras.Model):
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
         #by default conv2D uses format (NWHC): (batch, width,height,channels)
         #format ncwh requires a gpu at the moment that is why we are here at google colab
+        #since as of creating this file I do not have computer with CUDA
         
         self.conv1 = keras.layers.Conv2D(input_shape=(-1,*input_dims),
             filters=32,kernel_size=8,data_format='channels_first',strides=4,activation='relu')
@@ -31,24 +32,14 @@ class DQN(keras.Model):
         self.dense1 = keras.layers.Dense(units=512, activation='relu')
         self.dense2 = keras.layers.Dense(units=n_actions)
 
-        #make prepareations in order to move operatiions to proper device. for local runtime
-
     def call(self, state):
 
-        #print('input shape: ',state.shape)
-        #exit()
         conv1 = self.conv1(state)
-        #print('Conv1 output shape:', conv1.shape)
         conv2 = self.conv2(conv1)
-        #print('Conv2 output shape:', conv2.shape)
         conv3 = self.conv3(conv2)
-        #print('Conv3 output shape:',conv3.shape)
         flat = self.flat(conv3)
-        #print('flat : ', flat.shape)
         dense1 = self.dense1(flat)
-        #print('dense1 shape: ', dense1.shape)
         actions = self.dense2(dense1)
-        #print('actions: ', actions.shape)
         return actions
 
     def save_checkpoint(self):
