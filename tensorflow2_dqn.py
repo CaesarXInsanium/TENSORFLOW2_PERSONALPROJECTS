@@ -131,11 +131,7 @@ class DQNAgent(object):
 
             q_pred = tf.gather_nd(self.q_eval.call(states), list(zip(indices, actions)))
             q_next = tf.math.reduce_max(self.q_next.call(states_), axis=1)
-
-            q_next_np = np.array(q_next)
-            q_next_np[np.array(dones,dtype=np.bool)] = 0
-            q_next = tf.convert_to_tensor(q_next_np, dtype=tf.int32)
-
+            q_next = q_next * tf.expand_dims(tf.cast(dones, tf.float32), -1)
             q_target = rewards + self.gamma * q_next
             loss = keras.losses.MSE(q_target, q_pred)
         gradient = tape.gradient(loss, self.q_eval.trainable_variables)

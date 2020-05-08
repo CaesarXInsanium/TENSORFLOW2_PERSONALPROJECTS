@@ -135,9 +135,8 @@ class DDQNAgent(object):
             q_next = self.q_next.call(states_)
             q_eval = self.q_eval.call(states_)
             max_actions = tf.math.argmax(q_eval, axis=1)
-            q_next_np = np.array(q_next)
-            q_next_np[np.array(dones,dtype=np.bool)] = 0
-            q_next = tf.convert_to_tensor(q_next_np, dtype=tf.int32)
+            q_next = q_next * tf.expand_dims(tf.cast(dones, tf.float32), -1)
+
             gather = tf.gather_nd(q_next, list(zip(indices, tf.cast(max_actions, dtype=tf.int32))))
             q_target = rewards + self.gamma * tf.cast(gather, dtype=tf.float32)
 
