@@ -3,6 +3,8 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import gym
+#this code is copy pasted and so is the replay memory
+#code does not belong to Me, but to Phil
 
 def plot_learning_curve(x, scores, epsilons, filename, lines=None):
     fig=plt.figure()
@@ -34,7 +36,7 @@ def plot_learning_curve(x, scores, epsilons, filename, lines=None):
     plt.savefig(filename)
 
 class RepeatActionAndMaxFrame(gym.Wrapper):
-    """ modified from:
+    """ modified by Phil from:
         https://github.com/PacktPublishing/Deep-Reinforcement-Learning-Hands-On/blob/master/Chapter06/lib/wrappers.py
     """
     def __init__(self, env=None, repeat=4):
