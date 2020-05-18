@@ -1,2 +1,5 @@
 git_env/
 __pycache__/
+.ipynb_checkpoints/
+images_folder/
+image_testing_01.ipynb
