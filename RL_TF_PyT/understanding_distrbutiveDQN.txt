@@ -1,0 +1,40 @@
+in this case, j is is substitute for index. for j =0, j=1,j=2 etc
+upside down a means for all case of sub something. in this case j
+i am using | symbol to notate sub values
+OUTPUT LAYER SHALL BE OF SIZE (action space * number of quantitle targets)
+N - quantile targets
+k - huber loss paremeter. in this case k=1.
+q (lowercase) - probabilities
+prime symbol is used to notate a transformation.
+that symbol with big E along with [] brackets. it means expectation value. or the probabiliteis of s number being something
+E[x] = somthign something. the summation of all of it is 1
+T - tau symbol looks like uppercase t but is not. symbolizes the bellman optimality operator
+	is defined as 
+theta is the q_next network
+require N, k
+
+input: states, actions, new_states, gamma with epsilon within range(0,1)
+	#compute target
+	theta = Znetwork(states, actions) # gain q_ values of actions taken given states
+
+	action_value() is defined as as the summation of for j =1 to batchsize
+		probabilities|j * z_target_network_output|j(new_state,new_action)
+		#(z_next)
+
+	max_actions <- argmax|action_prime of action_value(state, action_prime)
+		#(z_next_max)
+		#take take actions with highest predicted q
+	
+	T_optimality of network|j <- reward + gamma*network|j(state_prime, max_actions) for all j
+		#(target_values, target_theta)
+
+	 
+	#compute quantitile regression loss
+output:diff summation from i=1 to n of:
+	expectation_value|j [ huber_quantile_loss(
+		target_theta - Znetwork|i(state,action) # or maybe target_theta
+		)]
+	
+	loss = 
+
+	 

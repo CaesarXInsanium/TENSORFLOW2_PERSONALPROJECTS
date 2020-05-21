@@ -132,6 +132,7 @@ class DDQNAgent(object):
         with tf.GradientTape() as tape:
 
             q_pred = tf.gather_nd(self.q_eval.call(states), list(zip(indices, actions)))
+            #predicted q for actions taken
             q_next = self.q_next.call(states_)
             q_eval = self.q_eval.call(states_)
             max_actions = tf.math.argmax(q_eval, axis=1)
