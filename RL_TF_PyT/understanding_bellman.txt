@@ -1,0 +1,97 @@
+optmizing the bellman equation
+v(s) = bellman equation, state value function
+vπ(s) = bellman expectation equation, equation subjected to policy π
+q = state_action value function
+qπ = state action value subjected to policy π
+R =rewards received at timesteps
+G_t+1 = expected returns at t+1, next and future rewards
+S = states the agent was  at timesteps
+s = single state of enviroment
+exp = expectation value of
+_ = used in place of subscripts
+gamma = discount factor
+Σ - alt 228, summation of
+π = alt 227
+ε = alt 238, member of
+∀ = for all symbol 
+P = probability of transition
+	Pss' = probability of enviroment to transition from state s to state s'
+
+
+#bellman
+v(s) = exp[ G_t+1 + gamma*v(S_t+1) | S_t = s]
+
+#bellman subjected to policy π
+vπ(s) = exp_π[ G_t+1 + gamma*vπ(S_t+1 | S_t = s]
+-given state s, there is expected subsequent rewards
+
+q_π(s,a) = exp_π[ G_t+1 + gamma*qπ(S_t+1, A_t+1) | S_t = s, A_t = a]
+-given state s and action a, there is expected subsequent and future rewards
+
+v_π(s) = Σ aεA (π(a|s)q_π(s,a)
+value of state s is the sum for all a (policy_π(a|s) * q_π(s,a))
+value of a state is defined the summation of the q_values of all the potential actions multiplied by the 
+	transition probability of the future states resulting from the potential actions
+connection between state_value and state_action value
+
+# how good is it to take action a
+q_π(s,a) = R_s^a + gamma *Σ s'εS (P_ss'^a * v_π(s'))
+q value given s and a is the reward received from being in state s and action a plus
+	gamma * summation of all possible future states (probability of transitionning from s to s' give action a
+	 *state_value(s')
+	all of which folling policy π
+#how good is it to to be in state s after taking action a, landing on state s and following policy π afterwards
+
+v_π(s) = Σ aεA ( π(a|s) * (R_s^a + gamma *Σ s'εS (P_ss'^a * v_π(s')))
+	value of state s is summation for all possible actions,
+	 expected returns given a|s + gamma*summation for all s'(probability of s to s' given action a * state_value_π(s')
+	value of state s is the summation of the q_values of for all actions a
+
+#q_value given states and actions while following policy π
+	q_π(s,a) = R_s^a + gamma*Σ s'εS (Σ a'εA (π(a'|s') * q_π(s',a')
+
+	q = received reward + gamma* summation for all future states of
+	 transition of transitioning from s to s' given action a * summation for all a',
+	  weighted_policy decicion * q value of said future state and action
+
+
+optimal value function: the OVF is the one that yields maximun value compared to other value function.
+	to solve MDP is to find optimal value function
+
+	v_*(s) = maxπ(v_π(s))
+
+optimal_state_action value function, q function: what is the maximun reward received from being in state s and 
+	taking action a
+	q_*(s,a) = maxπ( q_π(s,a) )
+
+optimal state-value function: maximun value function for all policies
+optimal state-action value function: maximum action-value function for all policies
+
+Optimal Policy: best policy is the one that with the maximun value function for all states. optimal value function
+	π >= π' if v_π(s) >= v_π'(s), ∀s
+	best policy is the the one that gives the highest state value given all states
+
+finding optimal policy: maximizing q(s,a) accross all the policies. solve q(s,a) then pick action with the highest value
+	π_*(a|s) = { 1 if a = argmax-aεA q_*(s,a)
+		     0 otherwise}
+	gives 1 if the action a is the optimal action, 0 if not. optimal policy inputs an action and gives binary reponse
+	on wether or not said action is the optimal one given a state
+
+bellman optimality equation: the optimal value function is recursively realted to the bellman optimality equation
+	v_*(s) = max-a q_*(s,a)
+	value of a state is the max q value among all actions of that state and chosen action
+	
+
+q_*(s,a) = R_s^a + gamma * Σ s'εS (P_ss'^a * v_*(s'))
+	optimal q value of state and action is reward of leaving state s and taking action a + gamma times
+	summation given all possible futures states of the probability of ending up in that states times the optimal
+	state value of the being in that possible future state
+
+v_*(s) = max-a (R_s^a + gamma * Σ s'εS (P_ss'^a * v_*(s'))
+	relating the optimal state value to itself
+	
+
+q_*(s,a) = R_s^a + gamma * Σ s'εS (P_ss'^a * max-a'(q_*(s',a'))
+	optimal q value of s and a is immeditate reward plus discounted summation for possible futures states of thye probability
+	of ending up in the state times the max q_value across all future actions of said future state and future action
+

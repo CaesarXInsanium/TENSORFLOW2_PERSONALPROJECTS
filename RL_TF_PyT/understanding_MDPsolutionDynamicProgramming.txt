@@ -1,0 +1,26 @@
+solving the markov decision process using dynamic programming
+
+Policy evaluation: act of predicting rewards received from following policy π. done using bellman expectation equation
+	v_k+1(s) = Σ aεA( π(a|s) * ( R_s^a + gamma*Σ s'S (P_ss'^a * v_k(s') ) ) )
+	expected state value from following policy k is summation across all potential actions, of the policy weight of state and action
+	times, immediate reward plus discounted sum accross all possible future states of probability of ending in that state acter taking action a
+	  times state value defined by policy k of the future state
+
+value of terminal state is alwasy zero.
+Acting greedy
+	π'(s) = argmax=aεA q_π(s,a)
+	chosen action is the one that gives the maximun q value given a state
+by definition, following the greedy policy is greater than or equal to following the previos policy
+	q_π(s, π'9s)) = max-aεA q_π(s,a) >= q_π(s,π(s)) = v_π(s)
+
+if value function of the policy is equal to the greedy value function then then bellman optimal equation is satified
+
+calculating new q value
+q_new(s,a) = (1-a) * q(s,a) + alpha * (R_t+1 + gamma*max->a q(s',a'))
+					old q,              expected reward, and new reward value
+new q value for given state action pair is relate to the old q value for that state action pair
+
+def learn(self, new_state: int, action:int, reward:int, old_state:int):
+        current_q = self.q_table[old_state][action]
+        new_q = current_q + self.alpha*(reward +self.gamma * np.argmax(self.q_table[new_state]) - current_q)
+        self.q_table[old_state][action] = new_q

@@ -2,5 +2,11 @@ git_env/
 __pycache__/
 .ipynb_checkpoints/
 images_folder/
-image_testing_01.ipynb
 .ipynb
+RL_TF_PyT/deep_q_retry.py
+RL_TF_PyT/test_code.py
+RL_TF_PyT/gym_env
+RL_TF_PyT/.vscode
+RL_TF_PyT/__pycache__
+images_folder/
+.txt

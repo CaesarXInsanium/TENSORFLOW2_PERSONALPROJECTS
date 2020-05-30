@@ -1,0 +1,108 @@
+understanding markov decision process
+RL involves agents, enviroment, states,actions and rewards
+
+agent- software programs that hopefully make intelligent decisions
+Action, A - set of actions agent can take
+enviroment - demonstration of problem to be solved
+
+episodic task - tasks that have terminal state. can only have finite states
+continues task - task that have no real end or easilly definable end
+
+state - position of agent within single timestep in enviroment. at each timestep agent
+	peforms action, receives new state and reward
+States - matrix of values of different states that a agent has been in
+transition - moving from one state to another
+
+Transition probability, or P - probability to transition from one state to another
+	P of s to s' = expectation_P[States at t+1 = s', States at t = s]
+				    [possible_future_states, current_states]
+
+state transition can be represented by a matrix of size (number of posible current states, number of possible futures states)
+	for each current state, the probabilities of all possible future states add up to one
+	
+
+markov property states that 'future is independent of the past given the future'
+	P_expectation[States at t+1 | States at t] = P_expectation[States at t+1 | summation of States at all values t]
+	states is numerical representaiton of current timesteps in an array
+
+
+reward - numerical value representing the level of peformance in enviroment, level to which task is completed
+	reward = Rewards at t
+
+ G at t -> Returns - summation of current and all future rewards in enviroment time steps. from t = 1 to t end 
+	r[t+1] is reward received at timestep 0
+	equation  using discount factor
+	summation for all values k (gamma^k * Rewards at t+k+1)
+	Rewards at t+1 + Rewards at t+2 + Rewards at t+3 + Rewards at t+4 + ...
+
+Rewards - received rewards
+
+Markov reward procress, MRP: q value of each state to another
+	Rewards at s = expectation_value[Rewards at t+1| States at t]
+	how much reward r can be expected from state s
+
+MRP(S,P,R,gamma):
+	S is set of states
+	P is transition_probability matrix
+	R is reward function
+	gamma is discount factor
+	Reward at state s = expectation_value(reward at t+1| state at t)
+		MRP(S,P,R,discount/gamma)
+	    	(states, transition_probability, reward_function, gamme)
+
+discount - optimal value for discount lies in 0.2 to 0.8
+
+
+summation of all rewards in episodic tasks timesteps is finite.
+with continuos task we use discount factor, allows for value of importnace to be placed on future rewards
+	discount factor is between 0 and 1. 0 being no care for future, 1 being future rewards only. can  sum up to infinity
+
+
+policy - function that defines probability distribution of actions for each state.
+	π(action|state) = _probabilities[Action at t = a| State at t = s]
+	policy given action and state = probability_distribution[Actions at t = a|States at t =s]
+	in short, for all states, there is distribution of Actions
+
+state_value function: how good it is to be in a given state as defined by the policy
+	state_value of π = distribution_π[G at t|States at t =s]
+		in short, for all states, they have have a value for expected returns
+	= expectation_π[ summation from k=0 to infinity(gamma^k * Rewards at t+k+1|States at t = s], for all s in defined set of states
+	expected return for terminal states is zero. we must zero these value out
+
+bellman equation: helps find optimal policies, state_value function. with more eperiences comes different value functions.
+	bellman is made up of two parts: immediate reward, discounted future rewards
+	bellman_value(state) = distribution[Rewards at t+1 + gamma*bellman_value(States at t+1) | States at t =s]
+
+	 for given all state s, there is expected returns plus discounted future returns
+	bellman_value(s) = Rewards at s + gamma*summation for all members s' in set S( P from s to s' * bellman(s') )
+
+	matrix form
+	v = R + gamma*Pv
+	v = R / (1-gamma*P)
+
+markov decision process: MDP(S,A,P,R,gamma)
+	S - set of states
+	A - set of actions agent can choose
+	P - transition probability
+	R - reward accumulated by actions
+	gamma - discount factor
+
+Transition Probability Matrix: given action, probability of transition from s to s'
+	P from s to s' given a = distribution[S at t+1 = s' | S at t, A at t = a]
+	for all states, for all actions, probility of transition to s'.
+	for each action all the probabilities must add up to one
+Reward Function:
+	R given a at s =  expectation[R at t+1|States at t = s, Action at t = a]
+	given state and action, there is expected returns
+
+	
+state_action_value function, q function: how good is it to take action a at state s given policy π
+	q_π(s,a) = expectation_π[G at t| States at t =s, Actions at t =a]
+	within a policy π, given state and action there is expected returns. how good it is to take action a
+	given state s as defined by policy
+	= expectation_π[
+	summation from k =0 to infinity(gamma^k *Rewards at t+k+1)| States at t =s, Actions at t =a)
+		]
+	
+
+
