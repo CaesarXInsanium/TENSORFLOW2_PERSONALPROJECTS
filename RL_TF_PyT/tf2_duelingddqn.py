@@ -297,7 +297,6 @@ class DuelingDDQNAgent(object):
             ))
             q_pred = tf.gather_nd(q_pred, list(zip(indices, actions)))
 
-
             #q value of the next states. using the policy/online network
             q_next = tf.add(V_s_,(
                 A_s_ - tf.reduce_mean(A_s_, axis=1, keepdims=True))
@@ -312,7 +311,8 @@ class DuelingDDQNAgent(object):
             ))
             max_actions = tf.argmax(q_eval, axis=1, output_type=tf.int32)
             #update the target value by 
-            q_target = tf.cast(rewards,dtype=tf.float32) + self.gamma * tf.gather_nd(q_next, list(zip(indices, max_actions)))
+            q_target = tf.cast(rewards,dtype=tf.float32) + self.gamma * tf.gather_nd(q_next,\
+                 list(zip(indices, max_actions)))
             
 
             #loss between target and prediction
