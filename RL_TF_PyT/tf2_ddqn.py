@@ -5,7 +5,7 @@ import gym
 import os
 from replay_memory import ReplayBuffer
 from utils import plot_learning_curve, make_env
-#this is my own implementation of the dqn code given my mr phil using tensorflow 2
+#this is my own tensorflow 2 implementation of the dqn code given my mr phil using tensorflow 2
 #tensorflow2 really is easy to code in. this code was developed using google colab
 #requires a GPU as of tensorflow version 2.0.1 i think
 
@@ -130,17 +130,28 @@ class DDQNAgent(object):
         indices = tf.range(self.batch_size)
 
         with tf.GradientTape() as tape:
-
+            #predicted q from actions taken from the memory
             q_pred = tf.gather_nd(self.q_eval.call(states), list(zip(indices, actions)))
-            #predicted q for actions taken
-            q_next = self.q_next.call(states_)
-            q_eval = self.q_eval.call(states_)
-            max_actions = tf.math.argmax(q_eval, axis=1)
-            q_next = q_next * tf.expand_dims(tf.cast(dones, tf.float32), -1)
 
+            #forward pass of future states trough policy network
+            q_next = self.q_next.call(states_)
+
+            #forward pass of future states trough target network
+            q_eval = self.q_eval.call(states_)
+
+            #gains the corresponding actions/indices that have the higest q values from target
+            max_actions = tf.math.argmax(q_eval, axis=1)
+
+            #zero out the terminal states
+            q_next = q_next * tf.expand_dims(tf.cast(dones, tf.float32), -1)
+            
+            #get q values of the max action predicted from targets using the policy network
             gather = tf.gather_nd(q_next, list(zip(indices, tf.cast(max_actions, dtype=tf.int32))))
+
+            #q value update
             q_target = rewards + self.gamma * tf.cast(gather, dtype=tf.float32)
 
+            #loss calculation
             loss = keras.losses.MSE(q_target, q_pred)
         gradient = tape.gradient(loss, self.q_eval.trainable_variables)
         optimizer.apply_gradients(zip(gradient, self.q_eval.trainable_variables))

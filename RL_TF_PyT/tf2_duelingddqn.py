@@ -286,24 +286,36 @@ class DuelingDDQNAgent(object):
         indices = tf.range(self.batch_size)
 
         with tf.GradientTape() as tape:
+            #calculate the value and advantage streams
             V_s, A_s = self.q_eval.call(states)
             V_s_, A_s_ = self.q_next.call(states_)
             V_s_eval, A_s_eval = self.q_eval.call(states_)
+
+            #calculate the q prediction of the actions taken from the replay memory. using the eval/target network.
             q_pred = tf.add(V_s,(
                 A_s - tf.reduce_mean(A_s, axis=1, keepdims=True)
             ))
             q_pred = tf.gather_nd(q_pred, list(zip(indices, actions)))
 
+
+            #q value of the next states. using the policy/online network
             q_next = tf.add(V_s_,(
                 A_s_ - tf.reduce_mean(A_s_, axis=1, keepdims=True))
             )
-            q_next = q_next * tf.expand_dims(tf.cast(dones, dtype=tf.float32), axis=-1)
+            q_next = q_next * tf.expand_dims(tf.cast(dones, dtype=tf.float32), axis=-1) #zero out the terminal states
+
+
+
+            #find the better possible actions using the eval network.
             q_eval = tf.add(V_s_eval, (
                 A_s_eval - tf.reduce_mean(A_s_eval, axis=1, keepdims=True)
             ))
             max_actions = tf.argmax(q_eval, axis=1, output_type=tf.int32)
+            #update the target value by 
             q_target = tf.cast(rewards,dtype=tf.float32) + self.gamma * tf.gather_nd(q_next, list(zip(indices, max_actions)))
             
+
+            #loss between target and prediction
             loss = keras.losses.MSE(q_target, q_pred)
         gradient = tape.gradient(loss, self.q_eval.trainable_variables)
         optimizer.apply_gradients(zip(gradient, self.q_eval.trainable_variables))

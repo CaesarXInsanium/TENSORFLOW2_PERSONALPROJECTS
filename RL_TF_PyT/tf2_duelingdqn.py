@@ -25,10 +25,10 @@ class DuelingDeepQNetwork(keras.Model):
         self.checkpoint_dir = chkpt_dir
         self.checkpoint_file = os.path.join(self.checkpoint_dir, name)
         self.conv1 = keras.layers.Conv2D(input_shape=(-1,*input_dims),
-            filters=32,kernel_size=8,data_format='channels_first',strides=4,activation='relu')
-        self.conv2 = keras.layers.Conv2D(filters=32,kernel_size=4,strides=2,data_format='channels_first',
+            filters=32,kernel_size=8,data_format='channels_last',strides=4,activation='relu')
+        self.conv2 = keras.layers.Conv2D(filters=32,kernel_size=4,strides=2,data_format='channels_last',
             activation='relu')
-        self.conv3 = keras.layers.Conv2D(filters=64,kernel_size=3,strides=1,data_format='channels_first',
+        self.conv3 = keras.layers.Conv2D(filters=64,kernel_size=3,strides=1,data_format='channels_last',
             activation='relu')
         self.flatlayer = keras.layers.Flatten()
         self.dense1 = keras.layers.Dense(units=1024, activation='relu')
@@ -37,6 +37,7 @@ class DuelingDeepQNetwork(keras.Model):
         self.V = keras.layers.Dense(units=1, activation='relu')
         self.A = keras.layers.Dense(units=n_actions, activation='relu')
     def call(self, state):
+        state = tf.transpose(state,perm=[0,2,3,1])
         conv1 = self.conv1(state)
         conv2 = self.conv2(conv1)
         conv3 = self.conv3(conv2)

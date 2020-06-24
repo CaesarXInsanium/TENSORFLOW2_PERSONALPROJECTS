@@ -10,3 +10,4 @@ RL_TF_PyT/.vscode
 RL_TF_PyT/__pycache__
 images_folder/
 .txt
+RL_TF_PyT/ddqn_tf_yt.py
