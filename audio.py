@@ -20,8 +20,10 @@ Sound info: get_info method. returns list with these values
     bitsPerSample (bits per sample)
 '''
 class tfSound(Sound):
+
     def __init__(self, *args, **kwargs):
         super(tfSound, self).__init__( *args, **kwargs)
+        self.tensor = tf.convert_to_tensor(self.data)
     def sample(self, seconds, start=0):
         """
         returns a tfsound object that has specified number of seconds long
@@ -32,11 +34,12 @@ class tfSound(Sound):
         new = self.data[start:dis+start]
             
         return tfSound(inData=new, inRate=self.rate)
-    def chunks(self, seconds = 5, num = None):
+    def chunks(self, seconds = 5, num = None, shuffled = False, list_obj=True):
         """
-        returns list with tfSound objects that are specified seconds long
+        returns list tfSound objects that are specified seconds long
         or specific number of chunks
         seconds can be specified to None and automatically figure out how long each chunk is
+
         """
         k = []
         if num == None:
@@ -49,7 +52,28 @@ class tfSound(Sound):
         else:
             for i in range(num):
                 k.append(self.sample(seconds, i * self.rate * seconds))
-        return k
-    def shuffled_chunks(self, *args):
-        s = self.chunks(*args)
-        return shuffle(s)
+
+        if shuffled:
+            shuffle(k)
+        if list_obj:
+            return k
+        print(len(k))
+        p = k[0]
+        p.concate_audio(k[1:])
+        return p
+
+
+    def concate_audio(self, data_list):
+        '''
+        modifies the tensor and numpy data in its own internal storage or something. returns nothing
+        '''
+        print(data_list)
+        for chunk in data_list:
+            print(1)
+            self.tensor = tf.concat([self.tensor, chunk.tensor], axis=0)
+        self.data  = np.asarray(self.tensor)
+
+if __name__ =='__main__':
+    ss = tfSound(r'C:\Users\jesus\Documents\WorkFiles\PythonCode\TF2_personal_projects\ArrivalPhobos.wav')
+    dd = ss.chunks(2, None, True, False)
+    dd.play()
